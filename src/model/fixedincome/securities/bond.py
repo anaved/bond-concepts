@@ -3,10 +3,15 @@ Created on Jun 26, 2017
 
 @author: alinaved
 '''
+from locale import currency
+
 from enum import Enum
-from model.base import Base
-from sqlalchemy import Column, Date, Integer, String, ForeignKey
+from sqlalchemy import Column, Date, Integer, String, ForeignKey, Numeric
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy_enum34 import EnumType
+
+from model.base import Base, Engine
+
 
 class IsserType( Enum ):
     GOVERNMENT = 'Government'
@@ -39,19 +44,30 @@ class Coupon( Base ):
     '''
     __tablename__ = 'coupon'
     id   = Column(Integer, primary_key=True)
-    start_date  = Column(Date, nullable=False)
-    end_data    = Column(Date, nullable=False)
+    issue_date  = Column(Date, nullable=False)
+    maturity_date    = Column(Date, nullable=False)
     frequency   = Column(Date, nullable=False)
     type = Column(EnumType(CouponType), nullable=False)
     dc_convention = Column(EnumType(DayCountConvention), nullable=False)
-    
-    
-class Bond(object):
+        
+class Bond(Base):
     '''
     classdocs
     '''
     __tablename__ = 'bond'
     id   = Column(Integer, primary_key=True)
-    isin = Column(String)
+    isin = Column(String)    
+    par_value = Column(Numeric, nullable=False) 
+    interest_rate =  Column(Numeric, nullable=False) 
     coupon_id = Column(Integer, ForeignKey('coupon.id'))
     issuer_id = Column(Integer, ForeignKey('issuer.id'))
+    
+class BondQuote( Base ):    
+    __tablename__ = 'quote'
+    id      = Column(Integer, primary_key=True)
+    bid     = Column(Numeric, nullable=False)
+    ask     = Column(Numeric, nullable=False) 
+    bond_id = Column(Integer, ForeignKey('bond.id'))
+    
+if __name__ == '__main__':
+    Base.metadata.create_all(Engine)   
