@@ -8,6 +8,16 @@ from model.base import Base
 from sqlalchemy import Column, Date, Integer, String, ForeignKey
 from sqlalchemy_enum34 import EnumType
 
+class IsserType( Enum ):
+    GOVERNMENT = 'Government'
+    CORPORATE  = 'Corporate'
+
+class Issuer( Base ):
+    __tablename__ = 'issuer'
+    id   = Column(Integer, primary_key=True)
+    name = Column(String)
+    type = Column(EnumType(IsserType), nullable=False)
+
 class CouponType( Enum ):
     FIXED = 'Fixed'
     VARIABLE = 'Variable'
@@ -22,7 +32,7 @@ class CouponFrequency( Enum ):
     QUARTERLY   = 'Quarterly'
     MONTHLY     = 'Monthly'
     AT_MATURITY = 'At Maturity'
-        
+
 class Coupon( Base ):
     '''
     Coupon properties of a bond
@@ -44,6 +54,4 @@ class Bond(object):
     id   = Column(Integer, primary_key=True)
     isin = Column(String)
     coupon_id = Column(Integer, ForeignKey('coupon.id'))
-
-
-        
+    issuer_id = Column(Integer, ForeignKey('issuer.id'))
