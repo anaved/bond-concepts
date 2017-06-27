@@ -33,10 +33,11 @@ class DayCountConvention( Enum ):
     THIRTY_360    = '30/360'
     
 class CouponFrequency( Enum ):    
-    SEMIANNUAL  = 'Semi-annual'
-    QUARTERLY   = 'Quarterly'
-    MONTHLY     = 'Monthly'
-    AT_MATURITY = 'At Maturity'
+    ANNUAL      = 1
+    SEMIANNUAL  = 1/2
+    QUARTERLY   = 1/4
+    MONTHLY     = 1/12
+    AT_MATURITY = 0
 
 class Coupon( Base ):
     '''
