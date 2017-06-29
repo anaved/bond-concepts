@@ -1,8 +1,8 @@
-'''
+"""
 Created on Jun 26, 2017
 
 @author: alinaved
-'''
+"""
 from locale import currency
 
 from enum import Enum
@@ -13,7 +13,7 @@ from sqlalchemy_enum34 import EnumType
 from model.base import Base, Engine
 
 
-class IsserType( Enum ):
+class IssuerType( Enum ):
     GOVERNMENT = 'Government'
     CORPORATE  = 'Corporate'
 
@@ -21,36 +21,23 @@ class Issuer( Base ):
     __tablename__ = 'issuer'
     id   = Column(Integer, primary_key=True)
     name = Column(String)
-    type = Column(EnumType(IsserType), nullable=False)
+    type = Column(EnumType(IssuerType), nullable=False)
 
-class CouponType( Enum ):
+class CouponRate( Enum ):
     FIXED = 'Fixed'
-    VARIABLE = 'Variable'
-    ZERO_COUPON = 'Zero Coupon'
+    FLOATING = 'Floating'
     
 class DayCountConvention( Enum ):
     ACTUAL_ACTUAL = 'Actual/Actual'
     THIRTY_360    = '30/360'
     
-class CouponFrequency( Enum ):    
-    ANNUAL      = 1
-    SEMIANNUAL  = 1/2
-    QUARTERLY   = 1/4
-    MONTHLY     = 1/12
-    AT_MATURITY = 0
+class CouponFrequency( Enum ):
+    ANNUAL      = '12'
+    SEMIANNUAL  = '6'
+    QUARTERLY   = '3'
+    MONTHLY     = '1'
+    AT_MATURITY = '0'
 
-class Coupon( Base ):
-    '''
-    Coupon properties of a bond
-    '''
-    __tablename__ = 'coupon'
-    id   = Column(Integer, primary_key=True)
-    issue_date  = Column(Date, nullable=False)
-    maturity_date    = Column(Date, nullable=False)
-    frequency   = Column(Date, nullable=False)
-    type = Column(EnumType(CouponType), nullable=False)
-    dc_convention = Column(EnumType(DayCountConvention), nullable=False)
-        
 class Bond(Base):
     '''
     classdocs
@@ -58,11 +45,27 @@ class Bond(Base):
     __tablename__ = 'bond'
     id   = Column(Integer, primary_key=True)
     isin = Column(String)    
-    par_value = Column(Numeric, nullable=False) 
-    interest_rate =  Column(Numeric, nullable=False) 
-    coupon_id = Column(Integer, ForeignKey('coupon.id'))
-    issuer_id = Column(Integer, ForeignKey('issuer.id'))
-    
+    par_value = Column(Numeric, nullable=False)
+    coupon_rate =  Column(Numeric)
+    issue_date  = Column(Date, nullable=False)
+    maturity_date  = Column(Date, nullable=False)
+    coupon_frequency = Column(EnumType(CouponFrequency), nullable=False)
+    coupon_rate_type = Column(EnumType(CouponRate), nullable=False)
+    dc_convention = Column(EnumType(DayCountConvention), nullable=False)
+    issuer = Column(Integer, ForeignKey('issuer.id'))
+    #TODO bondcalculator would be a hybrid method property
+    # coupons would be a property returned via calculator
+
+class Coupon( Base ):
+    '''
+    Coupon properties of a bond
+    '''
+    __tablename__ = 'coupon'
+    id   = Column(Integer, primary_key=True)
+    value = Column(Numeric, nullable=False)
+    payment_date = Column(Date, nullable=False)
+    bond = Column(Integer, ForeignKey('bond.id'))
+
 class BondQuote( Base ):    
     __tablename__ = 'quote'
     id      = Column(Integer, primary_key=True)
