@@ -6,9 +6,12 @@ from dateutil import relativedelta, parser
 from datetime import date
 
 class TestBondBase(object):
-
+    BASE_BOND = { 'issuer_type' : IssuerType.GOVERNMENT,
+                  'coupon_rate' : CouponRate.FIXED,
+                }
     def _setUp(self):
         self.govtBulletBond = self._setupGovtBulletBond()
+        
 
     def _setupGovtBulletBond(self):
         issuerType = IssuerType.GOVERNMENT

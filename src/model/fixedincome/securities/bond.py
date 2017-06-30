@@ -23,7 +23,7 @@ class Issuer( Base ):
     name = Column(String)
     type = Column(EnumType(IssuerType), nullable=False)
 
-class CouponRate( Enum ):
+class CouponType( Enum ):
     FIXED = 'Fixed'
     FLOATING = 'Floating'
     
@@ -50,7 +50,7 @@ class Bond(Base):
     issue_date  = Column(Date, nullable=False)
     maturity_date  = Column(Date, nullable=False)
     coupon_frequency = Column(EnumType(CouponFrequency), nullable=False)
-    coupon_rate_type = Column(EnumType(CouponRate), nullable=False)
+    coupon_type = Column(EnumType(CouponType), nullable=False)
     dc_convention = Column(EnumType(DayCountConvention), nullable=False)
     issuer = Column(Integer, ForeignKey('issuer.id'))
     #TODO bondcalculator would be a hybrid method property

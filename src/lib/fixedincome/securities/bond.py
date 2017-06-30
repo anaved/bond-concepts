@@ -3,11 +3,14 @@ Created on Jun 26, 2017
 
 @author: alinaved
 '''
-from dateutil import relativedelta
+from dateutil.relativedelta import relativedelta
 from datetime import date
 
 class BondCalculator( object ):
-    def __init__(self, bond , calculation_date = None,*args, **kwargs):
+    
+    
+    def __init__(self, bond , calculation_date = None ):
+        self._calculation_date = None
         self.bond = bond
         self.calculation_date = calculation_date or date.today()
 
@@ -25,15 +28,19 @@ class BondCalculator( object ):
         return ( 100 * self.bond.interest_rate / self.bond.par_value )
 
     @property
-    def coupons(self):
+    def coupon_dates(self):
+        def _cpns( m, s, e, res):
+            if m:
+                s = s +  relativedelta( months = m)
+                if s < e:
+                    res.append( s )
+                    return _cpns( m, s, e, res )
+            res.append( e )
+            return
+                
         frequency = self.get_coupon_frequency()
         coupons = []
-        coupon = self.bond.maturity_date
-        #atleast one coupon will be there on the maturity date
-        coupons.append(coupon)
-        while coupon > self.bond.issue_date:
-            coupon = coupon - relativedelta( months = frequency)
-            coupons.append(coupon)
+        _cpns( frequency, self.bond.issue_date, self.bond.maturity_date, coupons )    
         return coupons
 
     def get_next_coupon_date(self):
@@ -44,6 +51,6 @@ class BondCalculator( object ):
         Annual coupon frequency
         :return:
         '''
-        return int(self.bond.coupon.frequency.value)
+        return int(self.bond.coupon_frequency.value)
 
 

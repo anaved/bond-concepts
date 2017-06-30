@@ -15,7 +15,7 @@ class TestBondCalculator(TestCase, TestBondBase):
         self.fail()
 
     def test_get_coupons(self):
-        print self.calculator.coupons
+        print self.calculator.coupon_dates
 
     def test_getNextCouponDate(self):
         self.fail()
