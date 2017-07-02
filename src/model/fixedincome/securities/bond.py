@@ -44,7 +44,8 @@ class Bond(Base):
     '''
     __tablename__ = 'bond'
     id   = Column(Integer, primary_key=True)
-    isin = Column(String)    
+    isin = Column(String)
+    issuer = Column(Integer, ForeignKey('issuer.id'))
     par_value = Column(Numeric, nullable=False)
     coupon_rate =  Column(Numeric)
     issue_date  = Column(Date, nullable=False)
@@ -52,7 +53,7 @@ class Bond(Base):
     coupon_frequency = Column(EnumType(CouponFrequency), nullable=False)
     coupon_type = Column(EnumType(CouponType), nullable=False)
     dc_convention = Column(EnumType(DayCountConvention), nullable=False)
-    issuer = Column(Integer, ForeignKey('issuer.id'))
+
     #TODO bondcalculator would be a hybrid method property
     # coupons would be a property returned via calculator
 
@@ -66,6 +67,8 @@ class Coupon( Base ):
     payment_date = Column(Date, nullable=False)
     bond = Column(Integer, ForeignKey('bond.id'))
 
+    def __repr__(self):
+        return "Coupon value: %s, payment date %s" % (self.value, self.payment_date)
 class BondQuote( Base ):    
     __tablename__ = 'quote'
     id      = Column(Integer, primary_key=True)
