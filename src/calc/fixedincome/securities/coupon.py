@@ -10,6 +10,8 @@ from datetime import date
 from model.fixedincome.securities.bond import Coupon
 from dateutil.relativedelta import relativedelta
 from model.fixedincome.securities.bond import CouponType
+from calc.fixedincome.securities.daycounter import get_daycount_calculator_class
+
 
 class CouponCalculator( object ):
     __metaclass__ = ABCMeta
@@ -20,6 +22,7 @@ class CouponCalculator( object ):
         self.bond = bond
         self.coupon_dates = self._get_coupon_dates()
         self.calculation_date = calculation_date or date.today()
+        self.daycount_calculator = get_daycount_calculator_class( self.bond.coupon_type )(self.prev_coupon_date, self.next_coupon_date)
 
     @property
     def calculation_date(self):
@@ -54,7 +57,8 @@ class CouponCalculator( object ):
     def prev_coupon_date(self):
         return next((e for e in self.coupon_dates[::-1] if e < self.calculation_date), self.coupon_dates[0])
 
-    def get_coupon_frequency(self):
+    @property
+    def coupon_frequency(self):
         '''
         Annual coupon frequency
         :return:
@@ -69,14 +73,38 @@ class CouponCalculator( object ):
         return self.bond.par_value * coupon_pct /100
 
     @abstractmethod
-    def get_next_coupon_pct(self): pass
+    def get_next_coupon_yearfraction(self):
+        """Coupon % can differ base upon day count convention.
+           Which determine how much fraction of yearly % is due at this coupon
+        """
+        pass
+
+    def get_next_coupon_pct(self):
+        return self.bond.coupon_rate * self.get_next_coupon_yearfraction()
 
 class FixedCouponCalculator( CouponCalculator ):
     """
     Class to Calculate Fixed coupon type
     """
-    def get_next_coupon_pct(self):
-        return self.bond.coupon_rate
+    def get_next_coupon_yearfraction(self):
+        return self.daycount_calculator.year_fraction( self.prev_coupon_date, self.next_coupon_date)
+
+    def get_accrued_interest_pct(self ):
+        """
+        Returns accrued interest as percentage.
+        This is converted into amount with respect to par value.
+        :return:
+        """
+        if self.calculation_date in self.coupon_dates:
+            return 0
+        else:
+            days_since_coupon = self.daycount_calculator.day_count(self.prev_coupon_date, self.calculation_date)
+            days_between_coupons = self.daycount_calculator.day_count(self.prev_coupon_date, self.next_coupon_date)
+            coupon_fraction  = self.bond.coupon_rate / self.coupon_frequency
+            return coupon_fraction * ( days_since_coupon / days_between_coupons )
+
+    def get_accrued_interest_amount(self):
+        return self.bond.par_value * self.get_accrued_interest_pct()
 
 class FloatingCouponCalculator( CouponCalculator ):
     """

@@ -11,10 +11,6 @@ from model.fixedincome.securities.bond import DayCountConvention
 class DayCountCalculator( object ):
     __metaclass__ = ABCMeta
 
-    def __init__(self, start, end):
-        self.start = start
-        self.end = end
-
     @abstractproperty
     def numerator(self): pass
 
@@ -46,11 +42,11 @@ class Thirty360DayCountCalculator( DayCountCalculator ):
     def denominator(self):
         return 360
 
-    def day_count(self):
-        return 360*(self.end.year - self.start.year)\
-               + 30*(self.end.month - self.start.month -1)\
-               + max(0, 30 - self.start.day)\
-               + min(30, self.end.day)
+    def day_count(self, start, end):
+        return 360*(end.year - start.year)\
+               + 30*(end.month - start.month -1)\
+               + max(0, 30 - start.day)\
+               + min(30, end.day)
 
 __CALCULATOR_MAP = (
     (DayCountConvention.THIRTY_360, Thirty360DayCountCalculator ),
