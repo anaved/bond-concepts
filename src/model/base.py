@@ -8,7 +8,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 Base = declarative_base()
-Engine = create_engine('sqlite:///:memory:', echo=True)
+Engine = create_engine('sqlite:///../../src/db/bondDB', echo=True)
 Session = sessionmaker(bind=Engine)
 session = Session()
 

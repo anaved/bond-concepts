@@ -1,9 +1,8 @@
-from model.fixedincome.securities.bond import IssuerType, Issuer, \
-                                              CouponType, DayCountConvention,\
-                                              CouponFrequency, Coupon, Bond
-
-from dateutil import relativedelta, parser
 from datetime import date
+
+from model.bond import CouponType, DayCountConvention, \
+    CouponFrequency, Bond
+
 
 class TestBondBase(object):
     BASE_BOND = { 'isin'        : 'TEST123',

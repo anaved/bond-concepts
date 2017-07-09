@@ -7,10 +7,12 @@ Created on  :  01 07, 2017
 """
 from abc import ABCMeta, abstractmethod
 from datetime import date
-from model.fixedincome.securities.bond import Coupon
+
 from dateutil.relativedelta import relativedelta
-from model.fixedincome.securities.bond import CouponType
-from calc.fixedincome.securities.daycounter import get_daycount_calculator_class
+
+from calc.daycounter import get_daycount_calculator_class
+from model.bond import Coupon
+from model.bond import CouponType
 
 
 class CouponCalculator( object ):
@@ -22,7 +24,7 @@ class CouponCalculator( object ):
         self.bond = bond
         self.coupon_dates = self._get_coupon_dates()
         self.calculation_date = calculation_date or date.today()
-        self.daycount_calculator = get_daycount_calculator_class( self.bond.coupon_type )(self.prev_coupon_date, self.next_coupon_date)
+        self.daycount_calculator = get_daycount_calculator_class( self.bond.dc_convention )()
 
     @property
     def calculation_date(self):
@@ -44,7 +46,7 @@ class CouponCalculator( object ):
             res.append(e)
             return
 
-        frequency = self.get_coupon_frequency()
+        frequency = self.coupon_frequency
         coupons = []
         _cpns(frequency, self.bond.issue_date, self.bond.maturity_date, coupons)
         return coupons

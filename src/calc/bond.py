@@ -3,9 +3,10 @@ Created on Jun 26, 2017
 
 @author: alinaved
 '''
-from calc.fixedincome.securities.coupon import get_coupon_calculator_class
-
 from datetime import date
+
+from calc.coupon import get_coupon_calculator_class
+
 
 class BondCalculator( object ):
 

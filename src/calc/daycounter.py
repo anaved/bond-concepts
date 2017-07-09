@@ -6,7 +6,9 @@ Created on  :  01 Jul, 2017
 @description: Module to calculate fraction of year based upon day count convention
 """
 from abc import ABCMeta, abstractmethod, abstractproperty
-from model.fixedincome.securities.bond import DayCountConvention
+
+from model.bond import DayCountConvention
+
 
 class DayCountCalculator( object ):
     __metaclass__ = ABCMeta

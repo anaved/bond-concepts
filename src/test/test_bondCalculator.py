@@ -1,6 +1,7 @@
 from unittest import TestCase
+
+from calc.bond import BondCalculator
 from test.TestBase import TestBondBase
-from calc.fixedincome.securities.bond import BondCalculator
 
 
 class TestBondCalculator(TestCase, TestBondBase):
