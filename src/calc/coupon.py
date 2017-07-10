@@ -3,11 +3,11 @@ Created on  :  01 07, 2017
 
 @project    : bond-concepts
 @author     : alinaved
-@description: No description for this module
+@description: A coupon calculator module
 """
 from abc import ABCMeta, abstractmethod
 from datetime import date
-
+from decimal import Decimal
 from dateutil.relativedelta import relativedelta
 
 from calc.daycounter import get_daycount_calculator_class
@@ -97,13 +97,14 @@ class FixedCouponCalculator( CouponCalculator ):
         This is converted into amount with respect to par value.
         :return:
         """
-        if self.calculation_date in self.coupon_dates:
+        if self.calculation_date in [ self.bond.issue_date ] + self.coupon_dates:
             return 0
         else:
-            days_since_coupon = self.daycount_calculator.day_count(self.prev_coupon_date, self.calculation_date)
-            days_between_coupons = self.daycount_calculator.day_count(self.prev_coupon_date, self.next_coupon_date)
-            coupon_fraction  = self.bond.coupon_rate / self.coupon_frequency
-            return coupon_fraction * ( days_since_coupon / days_between_coupons )
+            start = self.prev_coupon_date if self.prev_coupon_date <= self.calculation_date else self.bond.issue_date
+            days_since_coupon = self.daycount_calculator.day_count(start, self.calculation_date)
+            days_between_coupons = self.daycount_calculator.day_count(start, self.next_coupon_date)
+            coupon_fraction  = self.bond.coupon_rate * ( float( self.coupon_frequency ) / 12 )
+            return coupon_fraction * ( float(days_since_coupon) / days_between_coupons )
 
     def get_accrued_interest_amount(self):
         return self.bond.par_value * self.get_accrued_interest_pct()

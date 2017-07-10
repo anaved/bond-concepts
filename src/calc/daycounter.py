@@ -45,6 +45,8 @@ class Thirty360DayCountCalculator( DayCountCalculator ):
         return 360
 
     def day_count(self, start, end):
+        if end <= start:
+            return 0
         return 360*(end.year - start.year)\
                + 30*(end.month - start.month -1)\
                + max(0, 30 - start.day)\
