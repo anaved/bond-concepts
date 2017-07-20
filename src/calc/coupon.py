@@ -28,7 +28,7 @@ class CouponCalculator( object ):
 
     @property
     def calculation_date(self):
-        return self._calculation_date
+        return self._calculation_date00
 
     @calculation_date.setter
     def calculation_date(self, value):

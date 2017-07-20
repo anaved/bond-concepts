@@ -29,6 +29,7 @@ class CouponType( Enum ):
     
 class DayCountConvention( Enum ):
     ACTUAL_ACTUAL = 'Actual/Actual'
+    ACTUAL_360    = 'Actual/360'
     THIRTY_360    = '30/360'
     
 class CouponFrequency( Enum ):
